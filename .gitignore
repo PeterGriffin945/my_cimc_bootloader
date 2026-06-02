@@ -1,0 +1,18 @@
+# Keil build output
+Objects/
+Listings/
+RTE/
+
+# Keil user settings
+*.uvguix.*
+*.uvoptx
+JLinkSettings.ini
+EventRecorderStub.scvd
+
+# IDE
+.vscode/
+01 Readme/
+
+# temp
+1.txt
+keilkilll.bat
