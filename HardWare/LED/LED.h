@@ -1,20 +1,13 @@
-/************************************************************
- * °æÈ¨£º2025CIMC Copyright¡£ 
- * ÎÄ¼þ£ºled.h
- * ×÷Õß: Lingyu Meng
- * Æ½Ì¨: 2025CIMC IHD-V04
- * °æ±¾: Lingyu Meng     2025/2/16     V0.01    original
-************************************************************/
+/*
+ * LED.h
+ * ä½œè€…: Lingyu Meng   2025/3/15
+ */
+
 #ifndef __LED_H
 #define __LED_H
 
-/************************* Í·ÎÄ¼þ *************************/
-
 #include "HeaderFiles.h"
 
-/************************* ºê¶¨Òå *************************/
-
-// LEDÒý½Å¶¨Òå
 #define LED_PIN_1   GPIO_PIN_4
 #define LED_PIN_2   GPIO_PIN_5
 #define LED_PIN_3   GPIO_PIN_6
@@ -22,32 +15,21 @@
 #define LED_PIN_5   GPIO_PIN_8
 #define LED_PIN_6   GPIO_PIN_9
 
-/************************ Ã¶¾Ù¶¨Òå ************************/
-
 typedef enum {
     LED_1 = 0,
-    LED_2 = 1,
-    LED_3 = 2,
-    LED_4 = 3,
-    LED_5 = 4,
-    LED_6 = 5
+    LED_2,
+    LED_3,
+    LED_4,
+    LED_5,
+    LED_6
 } LED_Name_TypeDef;
 
 typedef enum {
     LED_OFF = 0,
-    LED_ON = 1
+    LED_ON
 } LED_State_TypeDef;
-
-/************************ ±äÁ¿¶¨Òå ************************/
-
-
-/************************ º¯Êý¶¨Òå ************************/
 
 void LED_Init(void);
 void LED_Control(LED_Name_TypeDef led, LED_State_TypeDef state);
 
 #endif
-
-
-/****************************End*****************************/
-

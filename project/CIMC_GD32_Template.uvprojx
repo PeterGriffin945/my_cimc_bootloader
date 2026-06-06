@@ -277,7 +277,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x80000</Size>
+                <Size>0x10000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,GD32F470</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CMSIS;..\Startup;..\Library\GD32F4xx_standard_peripheral\Include;..\User;..\HeaderFiles;..\Function;..\HardWare\LED;..\CMSIS\GD\GD32F4xx\Include;..\Fatfs;..\HardWare\SDCARD;..\HardWare\USART;..\HardWare\ADC;..\HardWare\OLED;..\HardWare\RTC;..\HardWare\DAC;..\HardWare\SPI_FLASH;..\HardWare\ROM</IncludePath>
+              <IncludePath>..\CMSIS;..\Startup;..\Library\GD32F4xx_standard_peripheral\Include;..\User;..\HeaderFiles;..\Function;..\CMSIS\GD\GD32F4xx\Include;..\HardWare\USART;..\HardWare\ROM</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -403,18 +403,6 @@
         </Group>
         <Group>
           <GroupName>HardWare</GroupName>
-          <Files>
-            <File>
-              <FileName>LED.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HardWare\LED\LED.c</FilePath>
-            </File>
-            <File>
-              <FileName>LED.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\HardWare\LED\LED.h</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>Protocol</GroupName>
@@ -626,71 +614,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Fatfs</GroupName>
-          <Files>
-            <File>
-              <FileName>00readme.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Fatfs\00readme.txt</FilePath>
-            </File>
-            <File>
-              <FileName>diskio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Fatfs\diskio.c</FilePath>
-            </File>
-            <File>
-              <FileName>diskio.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Fatfs\diskio.h</FilePath>
-            </File>
-            <File>
-              <FileName>ff.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Fatfs\ff.c</FilePath>
-            </File>
-            <File>
-              <FileName>ff.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Fatfs\ff.h</FilePath>
-            </File>
-            <File>
-              <FileName>ffconf.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Fatfs\ffconf.h</FilePath>
-            </File>
-            <File>
-              <FileName>integer.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Fatfs\integer.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>SDCARD</GroupName>
-          <Files>
-            <File>
-              <FileName>sdcard.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HardWare\SDCARD\sdcard.c</FilePath>
-            </File>
-            <File>
-              <FileName>sdcard.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\HardWare\SDCARD\sdcard.h</FilePath>
-            </File>
-            <File>
-              <FileName>sd_utils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HardWare\SDCARD\sd_utils.c</FilePath>
-            </File>
-            <File>
-              <FileName>sd_utils.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\HardWare\SDCARD\sd_utils.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>USART</GroupName>
           <Files>
             <File>
@@ -702,86 +625,6 @@
               <FileName>usart.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\HardWare\USART\usart.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>ADC</GroupName>
-          <Files>
-            <File>
-              <FileName>ADC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HardWare\ADC\ADC.c</FilePath>
-            </File>
-            <File>
-              <FileName>ADC.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\HardWare\ADC\ADC.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>OLED</GroupName>
-          <Files>
-            <File>
-              <FileName>OLED.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HardWare\OLED\OLED.c</FilePath>
-            </File>
-            <File>
-              <FileName>OLED.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\HardWare\OLED\OLED.h</FilePath>
-            </File>
-            <File>
-              <FileName>OLEDfont.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\HardWare\OLED\OLEDfont.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>RTC</GroupName>
-          <Files>
-            <File>
-              <FileName>RTC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HardWare\RTC\RTC.c</FilePath>
-            </File>
-            <File>
-              <FileName>RTC.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\HardWare\RTC\RTC.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>DAC</GroupName>
-          <Files>
-            <File>
-              <FileName>dac.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HardWare\DAC\dac.c</FilePath>
-            </File>
-            <File>
-              <FileName>dac.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\HardWare\DAC\dac.h</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>SPI_FLASH</GroupName>
-          <Files>
-            <File>
-              <FileName>SPI_FLASH.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HardWare\SPI_FLASH\SPI_FLASH.c</FilePath>
-            </File>
-            <File>
-              <FileName>SPI_FLASH.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\HardWare\SPI_FLASH\SPI_FLASH.h</FilePath>
             </File>
           </Files>
         </Group>

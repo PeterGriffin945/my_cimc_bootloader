@@ -16,3 +16,7 @@ EventRecorderStub.scvd
 # temp
 1.txt
 keilkilll.bat
+
+# IDE project configs (non-Keil)
+project/.cmsis/
+project/.eide/

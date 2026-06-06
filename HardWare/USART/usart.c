@@ -1,3 +1,5 @@
+//使用rs485通信，满足低功耗需求，接到了usart1，传输速率19200，pd5是tx，ps6是rx，pe8控制收发
+
 #include "usart.h"
 
 unsigned char rx_buf[BUF_SIZE];
@@ -17,21 +19,20 @@ void usart_init(void)
     gpio_mode_set(GPIOD, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_6);
     gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_6);
 
-    // PE8=方向, 高=发, 低=收
+    // PE8=485方向, 默认接收
     gpio_mode_set(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_8);
     gpio_output_options_set(GPIOE, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_8);
-    gpio_bit_reset(GPIOE, GPIO_PIN_8);   // 默认接收
+    gpio_bit_reset(GPIOE, GPIO_PIN_8);
 
-    // 115200, 8N1
     usart_deinit(USART1);
-    usart_baudrate_set(USART1, 115200U);
+    usart_baudrate_set(USART1, 19200U);
     usart_word_length_set(USART1, USART_WL_8BIT);
     usart_stop_bit_set(USART1, USART_STB_1BIT);
     usart_parity_config(USART1, USART_PM_NONE);
     usart_receive_config(USART1, USART_RECEIVE_ENABLE);
     usart_transmit_config(USART1, USART_TRANSMIT_ENABLE);
 
-    // 中断: RBNE(收字节) + IDLE(帧结束)
+    // RBNE中断(收字节) + IDLE中断(帧结束)
     nvic_irq_enable(USART1_IRQn, 3, 0);
     usart_interrupt_enable(USART1, USART_INT_RBNE);
     usart_interrupt_enable(USART1, USART_INT_IDLE);
@@ -39,21 +40,23 @@ void usart_init(void)
     usart_enable(USART1);
 }
 
+// 重写printf函数
 int fputc(int ch, FILE *f)
 {
-    gpio_bit_set(GPIOE, GPIO_PIN_8);   // 切到发送
+    gpio_bit_set(GPIOE, GPIO_PIN_8);
 
     usart_data_transmit(USART1, (unsigned char)ch);
-    while (!usart_flag_get(USART1, USART_FLAG_TC));   // 等最后一个比特发完
+    while (!usart_flag_get(USART1, USART_FLAG_TC));
     usart_flag_clear(USART1, USART_FLAG_TC);
 
-    gpio_bit_reset(GPIOE, GPIO_PIN_8); // 切回接收
+    gpio_bit_reset(GPIOE, GPIO_PIN_8);
 
     return ch;
 }
 
 void USART1_IRQHandler(void)
 {
+    // 收字节
     if (usart_interrupt_flag_get(USART1, USART_INT_FLAG_RBNE) != RESET) {
         unsigned char data = usart_data_receive(USART1);
         if (rx_len < BUF_SIZE) {
@@ -62,6 +65,7 @@ void USART1_IRQHandler(void)
         }
     }
 
+    // IDLE: 一帧完了
     if (usart_interrupt_flag_get(USART1, USART_INT_FLAG_IDLE) != RESET) {
         volatile unsigned int tmp;
         tmp = USART_STAT0(USART1);
