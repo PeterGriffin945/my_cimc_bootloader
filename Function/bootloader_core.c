@@ -74,6 +74,9 @@ static uint16_t cal_crc16(uint8_t *d, uint32_t n)
     return crc;
 }
 
+/* ===== 全局变量 ===== */
+static uint16_t bl_dev_id = 0;   // 从 APP param_store 读到的设备ID
+
 /* ===== 发送 ===== */
 
 /* 发送原始 ASCII 字符串 (不经帧封装) */
@@ -95,7 +98,8 @@ static void send_frame(uint8_t type, uint16_t cmd, uint8_t *data, uint8_t len)
     uint16_t i, idx = 0;
 
     raw[idx++] = 0xA5; raw[idx++] = 0xB6;
-    raw[idx++] = 0;    raw[idx++] = 0;   /* 设备ID (暂填0) */
+    raw[idx++] = bl_dev_id >> 8;
+    raw[idx++] = bl_dev_id & 0xFF;
     raw[idx++] = type;
     raw[idx++] = cmd >> 8;   raw[idx++] = cmd & 0xFF;
     raw[idx++] = len;
@@ -220,9 +224,10 @@ static uint32_t recv_firmware(void)
     uint32_t slen = 0, total = 0, tout = 0;
     int got_data = 0;
 
-    /* 擦除暂存区 (32 页 × 4K) */
-    for (int i = 0; i < 32; i++)
-        flash_erase(STAGING_ADDR + i * 4096);
+    /* 擦除暂存区 (sector 6 + 7, flash_erase 使用 fmc_sector_erase) */
+    flash_erase(STAGING_ADDR);
+    if (STAGING_ADDR + STAGING_SIZE > 0x08060000)
+        flash_erase(0x08060000);
 
     /* 关 IRQ, 直接轮询 RBNE 收原始字节 */
     NVIC_DisableIRQ(USART1_IRQn);
@@ -246,18 +251,29 @@ static uint32_t recv_firmware(void)
         }
     }
 
-    NVIC_EnableIRQ(USART1_IRQn);
+    /* 写剩余不足切片的数据 */
+    if (slen > 0)
+        flash_write(STAGING_ADDR + total - slen, slice, slen);
 
-    /* 清除收固件残留的 IDLE 标志, 避免污染后续帧接收 */
+    /* ---- 收完固件后彻底清接收状态, 避免残余字节污染后续帧 ---- */
+    delay_1ms(20);   /* 等总线彻底静默 */
+
+    /* 关中断状态下 Drain 残余 RBNE 字节 + 清 IDLE */
+    while (usart_flag_get(USART1, USART_FLAG_RBNE)) {
+        volatile uint8_t d = (uint8_t)USART_DATA(USART1);
+        (void)d;
+    }
     if (usart_flag_get(USART1, USART_FLAG_IDLE)) {
         volatile uint32_t tmp = USART_STAT0(USART1);
         tmp = USART_DATA(USART1);
         (void)tmp;
     }
 
-    /* 写剩余不足切片的数据 */
-    if (slen > 0)
-        flash_write(STAGING_ADDR + total - slen, slice, slen);
+    /* 重置协议接收状态, 让 wait_frame 从干净状态开始 */
+    rx_len  = 0;
+    rx_done = 0;
+
+    NVIC_EnableIRQ(USART1_IRQn);
 
     return total;
 }
@@ -318,6 +334,19 @@ static uint8_t get_baud_from_app_para(void)
     return 0xFF;  /* 未找到 */
 }
 
+/* 从 APP param_store 扫描最后一个有效槽, 读取设备ID (offset 20) */
+static uint16_t get_dev_id_from_app_para(void)
+{
+    for (int i = APP_PARA_CNT - 1; i >= 0; i--) {
+        uint32_t *p = (uint32_t *)(APP_PARA_BASE + i * APP_PARA_SZ);
+        if (*p == 0xA5A5A5A5) {
+            uint16_t *did = (uint16_t *)((uint8_t *)p + 20);
+            return *did;
+        }
+    }
+    return 0;
+}
+
 void bootloader_run(void)
 {
     uint8_t type, clen;
@@ -325,13 +354,14 @@ void bootloader_run(void)
     uint8_t cont[260];
     uint32_t fw_len;
 
-    /* 从 APP param_store 读取已保存的波特率，覆盖 usart_init 的 19200 默认值 */
+    /* 从 APP param_store 读取已保存的波特率和设备 ID */
     {
         uint8_t bc = get_baud_from_app_para();
         uint32_t tbl[] = {4800, 9600, 19200, 115200};
         if (bc >= 0x11 && bc <= 0x14)
             usart_set_baud(tbl[bc - 0x11]);
     }
+    bl_dev_id = get_dev_id_from_app_para();
 
     uint32_t flag = *(volatile uint32_t *)PARA_BASE;
 
@@ -351,6 +381,7 @@ void bootloader_run(void)
         fmc_lock();
 
         /* 倒计时并监听 0x0502 */
+retry_prep:
         rs485_send_str("using command to interrupt start Application\r\n");
 
         rs485_send_str("wait for start Application(10s)……\r\n");
@@ -391,8 +422,7 @@ void bootloader_run(void)
             if (!magic_ok) {
                 send_frame(T_ERR, C_PREP, NULL, 0);
                 delay_1ms(500);
-                __set_FAULTMASK(1);
-                NVIC_SystemReset();
+                goto retry_prep;
             }
         }
 
