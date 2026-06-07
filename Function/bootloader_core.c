@@ -317,8 +317,8 @@ static void jump_to_app(void)
 
 /* ===== 主流程 ===== */
 
-/* APP 参数区 (0x08031000) 波特率扫描 */
-#define APP_PARA_BASE   0x08031000
+/* APP 参数区 (0x08010000) 波特率扫描 */
+#define APP_PARA_BASE   0x08010000
 #define APP_PARA_SZ     64
 #define APP_PARA_CNT    (4096 / 64)
 
