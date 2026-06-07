@@ -415,6 +415,16 @@
               <FileType>1</FileType>
               <FilePath>..\Function\Function.c</FilePath>
             </File>
+            <File>
+              <FileName>bootloader_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Function\bootloader_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>bootloader_core.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Function\bootloader_core.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

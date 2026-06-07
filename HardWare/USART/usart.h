@@ -11,5 +11,6 @@ extern unsigned int  rx_len;
 extern unsigned char rx_done;
 
 void usart_init(void);
+void usart_set_baud(uint32_t baud);
 
 #endif

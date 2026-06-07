@@ -40,7 +40,11 @@ void usart_init(void)
     usart_enable(USART1);
 }
 
-// 重写printf函数
+void usart_set_baud(uint32_t baud)
+{
+    usart_baudrate_set(USART1, baud);
+}
+
 int fputc(int ch, FILE *f)
 {
     gpio_bit_set(GPIOE, GPIO_PIN_8);
